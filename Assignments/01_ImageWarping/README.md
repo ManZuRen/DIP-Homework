@@ -87,7 +87,11 @@ python run_point_transform.py
 
 ### 演示视频（video1）
 
-[点击查看视频 `video1.mp4`](pics/video1.mp4)
+<video src="pics/video1.mp4" controls width="800">
+  您的浏览器或 GitHub 页面当前无法直接播放该视频，请点击下方链接查看。
+</video>
+
+[如果上方未显示播放器，点击这里打开 `video1.mp4`](pics/video1.mp4)
 
 ## 参考资料
 
