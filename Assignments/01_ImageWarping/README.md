@@ -87,11 +87,9 @@ python run_point_transform.py
 
 ### 演示视频（video1）
 
-<video src="pics/video1.mp4" controls width="800">
-  您的浏览器或 GitHub 页面当前无法直接播放该视频，请点击下方链接查看。
-</video>
+[![点击查看演示视频](pics/p2.png)](pics/video1.mp4)
 
-[如果上方未显示播放器，点击这里打开 `video1.mp4`](pics/video1.mp4)
+点击上方预览图可打开 `video1.mp4`。GitHub 仓库首页通常不能稳定直接播放 README 中嵌入的视频，因此这里使用“预览图 + 视频链接”的方式，兼容性更好。
 
 ## 参考资料
 
