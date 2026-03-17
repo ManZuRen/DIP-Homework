@@ -91,26 +91,9 @@ python run_point_transform.py
 
 如果上方动图显示不完整或你需要查看原始视频，请点击这里打开：[video1.mp4](pics/video1.mp4)
 
-## 参考资料
-
-- [课程课件](https://pan.ustc.edu.cn/share/index/66294554e01948acaf78)
-- [Image Deformation Using Moving Least Squares](https://people.engr.tamu.edu/schaefer/research/mls.pdf)
-- [Image Warping by Radial Basis Functions](https://www.sci.utah.edu/~gerig/CS6640-F2010/Project3/Arad-1995.pdf)
-- [OpenCV Geometric Transformations](https://docs.opencv.org/4.x/da/d6e/tutorial_py_geometric_transformations.html)
-- [Gradio 官方文档](https://www.gradio.app/)
-
 ## 文件说明
 
 - `run_global_transform.py`：基础图像几何变换交互程序。
 - `run_point_transform.py`：基于 MLS 的控制点引导图像形变交互程序。
 - `requirements.txt`：项目依赖列表。
 - `pics/`：README 中使用的结果图、动图预览与演示视频，包括 `p1.png`、`p2.png`、`video1_preview.gif`、`video1.mp4`。
-
-## 说明
-
-- 本 README 采用课程仓库中给出的作业提交模板结构进行整理。
-- 当前实现重点是完成作业要求，并提供可交互演示。
-
-## 致谢
-
-控制点图像形变部分参考了经典的移动最小二乘法图像变形方法。
