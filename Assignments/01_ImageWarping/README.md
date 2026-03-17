@@ -87,9 +87,9 @@ python run_point_transform.py
 
 ### 演示视频（video1）
 
-[![点击查看演示视频](pics/p2.png)](pics/video1.mp4)
+<img src="pics/video1_preview.gif" alt="演示视频预览" width="800">
 
-点击上方预览图可打开 `video1.mp4`。GitHub 仓库首页通常不能稳定直接播放 README 中嵌入的视频，因此这里使用“预览图 + 视频链接”的方式，兼容性更好。
+如果上方动图显示不完整或你需要查看原始视频，请点击这里打开：[video1.mp4](pics/video1.mp4)
 
 ## 参考资料
 
@@ -104,7 +104,7 @@ python run_point_transform.py
 - `run_global_transform.py`：基础图像几何变换交互程序。
 - `run_point_transform.py`：基于 MLS 的控制点引导图像形变交互程序。
 - `requirements.txt`：项目依赖列表。
-- `pics/`：README 中使用的结果图与演示视频，包括 `p1.png`、`p2.png`、`video1.mp4`。
+- `pics/`：README 中使用的结果图、动图预览与演示视频，包括 `p1.png`、`p2.png`、`video1_preview.gif`、`video1.mp4`。
 
 ## 说明
 
