@@ -231,6 +231,7 @@ Pix2Pix/checkpoints/pix2pix_model_epoch_300.pth
 <img width="768" height="256" alt="image-2" src="https://github.com/user-attachments/assets/1563e836-d66b-4b54-b4b3-0898c4b5be5d" />
 
 验证集结果
+
 <img width="768" height="256" alt="result_5" src="https://github.com/user-attachments/assets/36ed7773-69dd-4eca-b17a-0de01ec34edd" />
 <img width="768" height="256" alt="result_4" src="https://github.com/user-attachments/assets/52c7d2bc-d997-4b47-8320-ba4e4c7ae199" />
 
