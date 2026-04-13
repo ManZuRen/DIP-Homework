@@ -1,3 +1,4 @@
+<img width="1545" height="743" alt="image" src="https://github.com/user-attachments/assets/87eaf426-138a-442c-a88e-c7e0dbcdd868" />
 # Assignment 2 Report - DIP with PyTorch
 
 本报告对应数字图像处理课程作业 2，包含两个部分：
@@ -104,9 +105,10 @@ C:\Users\Admin\Desktop\vmesh\.venv\Scripts\python.exe run_blending_gradio.py
 http://127.0.0.1:7860
 ```
 ### Results
+<img width="1545" height="743" alt="image" src="https://github.com/user-attachments/assets/2d27a09b-d861-4b6a-9b14-38805ab96d0e" />
+<img width="1603" height="620" alt="image-1" src="https://github.com/user-attachments/assets/af95a7eb-7056-4780-b597-a9262b68ee0a" />
 
-![alt text](image.png)
-![alt text](image-1.png)
+
 
 ### Analysis
 
@@ -224,11 +226,14 @@ Pix2Pix/checkpoints/pix2pix_model_epoch_300.pth
 
 ### Results
 训练集结果
-![alt text](image-2.png)
-![alt text](Pix2Pix/train_results/epoch_295/result_4.png)
+
+<img width="768" height="256" alt="result_4" src="https://github.com/user-attachments/assets/e74d3dbe-563f-46c4-804e-7971f0d2e465" />
+<img width="768" height="256" alt="image-2" src="https://github.com/user-attachments/assets/1563e836-d66b-4b54-b4b3-0898c4b5be5d" />
+
 验证集结果
-![alt text](Pix2Pix/val_results/epoch_295/result_5.png)
-![alt text](Pix2Pix/val_results/epoch_295/result_4.png)
+<img width="768" height="256" alt="result_5" src="https://github.com/user-attachments/assets/36ed7773-69dd-4eca-b17a-0de01ec34edd" />
+<img width="768" height="256" alt="result_4" src="https://github.com/user-attachments/assets/52c7d2bc-d997-4b47-8320-ba4e4c7ae199" />
+
 
 ### Analysis
 
