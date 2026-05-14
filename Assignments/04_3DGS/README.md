@@ -81,7 +81,7 @@ $$
 f(\mathbf{x}; \boldsymbol{\mu}_i, \boldsymbol{\Sigma}_i) = \frac{1}{2\pi\sqrt{|\boldsymbol{\Sigma}_i|}} \exp\left(P_{(\mathbf{x},i)}\right), \quad P_{(\mathbf{x},i)} = -\frac{1}{2}(\mathbf{x} - \boldsymbol{\mu}_i)^T \boldsymbol{\Sigma}_i^{-1} (\mathbf{x} - \boldsymbol{\mu}_i)
 $$
 
-其中 $\boldsymbol{\mu}_{i}$ 与 $\boldsymbol{\Sigma}_{i}$ 为投影后的 2D 高斯中心与协方差。
+其中 **μᵢ** 与 **Σᵢ** 为投影后的 2D 高斯中心与协方差。
 
 > **TODO**：在 [gaussian_renderer.py#L61](gaussian_renderer.py#L61) 中计算 Gaussian 取值。
 
