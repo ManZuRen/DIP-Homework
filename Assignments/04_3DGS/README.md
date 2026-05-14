@@ -105,6 +105,20 @@ $$
 python train.py --colmap_dir data/chair --checkpoint_dir data/chair/checkpoints
 ```
 
+### Render a Multi-view Video (Optional)
+
+训练完成后，可用 [render_3dgs_mv.py](render_3dgs_mv.py) 沿一个绕场景中心的**水平圆轨迹**渲染一段连续视角视频，便于直观检查重建质量：
+
+```bash
+python render_3dgs_mv.py \
+    --colmap_dir data/chair \
+    --checkpoint data/chair/checkpoints/checkpoint_000060.pt \
+    --num_frames 240 --fps 30
+# 默认输出: <colmap_dir>/render_mv.mp4
+```
+
+up 轴由训练相机的 y 轴平均自动估计（NeRF 合成数据图像均为正放），orbit 半径与高度取训练相机的均值。
+
 ---
 
 ## Task 3: Compare with the Official 3DGS Implementation
