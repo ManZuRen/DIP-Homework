@@ -24,7 +24,7 @@ class TrainConfig:
     checkpoint_dir: str = "checkpoints"
     log_dir: str = "logs"
     debug_every: int = 1  # Save debug images every N epochs
-    debug_samples: int = 1  # Number of images to save for debugging
+    debug_samples: int = 4  # Number of views to combine into the debug grid
 
 class GaussianTrainer:
     def __init__(
@@ -56,26 +56,38 @@ class GaussianTrainer:
         # Keep track of debug indices
         self.debug_indices = None
 
-    def save_debug_images(self, epoch: int, rendered_images: torch.Tensor, 
+    def save_debug_images(self, epoch: int, rendered_images: torch.Tensor,
                          gt_images: torch.Tensor, image_paths: list):
         """
-        Save debug images comparing ground truth and rendered results
+        Combine all debug views into one image: top row = GT for each view,
+        bottom row = rendered for each view. Columns correspond across rows.
         """
-        # Convert tensors to numpy arrays
         rendered = rendered_images.detach().cpu().numpy()
         gt = gt_images.detach().cpu().numpy()
-        epoch_dir = Path(self.config.log_dir) / f"epoch_{epoch:04d}"
-        epoch_dir.mkdir(exist_ok=True)
-        
+
+        gt_cells, rendered_cells = [], []
         for b in range(rendered.shape[0]):
-            base_name = Path(image_paths[b]).stem
-            rendered_img = (rendered[b] * 255).clip(0, 255).astype(np.uint8)
-            gt_img = (gt[b] * 255).clip(0, 255).astype(np.uint8)
-            rendered_img = cv2.cvtColor(rendered_img, cv2.COLOR_RGB2BGR)
-            gt_img = cv2.cvtColor(gt_img, cv2.COLOR_RGB2BGR)
-            comparison = np.concatenate([gt_img, rendered_img], axis=1)
-            output_path = epoch_dir / f"{base_name}.png"
-            cv2.imwrite(str(output_path), comparison)
+            r = (rendered[b] * 255).clip(0, 255).astype(np.uint8)
+            g = (gt[b] * 255).clip(0, 255).astype(np.uint8)
+            r = cv2.cvtColor(r, cv2.COLOR_RGB2BGR)
+            g = cv2.cvtColor(g, cv2.COLOR_RGB2BGR)
+            label = Path(image_paths[b]).stem
+            cv2.putText(g, label, (6, 14), cv2.FONT_HERSHEY_SIMPLEX,
+                        0.35, (0, 255, 0), 1, cv2.LINE_AA)
+            gt_cells.append(g)
+            rendered_cells.append(r)
+
+        gt_row = np.concatenate(gt_cells, axis=1)
+        rendered_row = np.concatenate(rendered_cells, axis=1)
+        # Tag the leftmost edge so it's unambiguous which row is which
+        cv2.putText(gt_row, "GT", (6, 30), cv2.FONT_HERSHEY_SIMPLEX,
+                    0.5, (0, 255, 255), 1, cv2.LINE_AA)
+        cv2.putText(rendered_row, "Rendered", (6, 30), cv2.FONT_HERSHEY_SIMPLEX,
+                    0.5, (0, 255, 255), 1, cv2.LINE_AA)
+        grid = np.concatenate([gt_row, rendered_row], axis=0)
+
+        output_path = Path(self.config.log_dir) / f"epoch_{epoch:04d}.png"
+        cv2.imwrite(str(output_path), grid)
 
     def save_checkpoint(self, epoch: int):
         """Save model checkpoint"""
@@ -221,30 +233,28 @@ class GaussianTrainer:
             if epoch % self.config.save_every == 0:
                 self.save_checkpoint(epoch)
                 
-            # Save debug images every N epochs
+            # Save debug images every N epochs — render each debug view
+            # individually (train_step assumes batch size 1), then stack into
+            # one grid for save_debug_images.
             if epoch % self.config.debug_every == 0:
-                debug_batches = []
+                rendered_list, gt_list, path_list = [], [], []
                 for idx in self.debug_indices:
-                    debug_batches.append(train_loader.dataset[idx])
-                
-                # Stack debug batches
-                debug_batch = {
-                    k: torch.stack([b[k] for b in debug_batches], 0) 
-                    if torch.is_tensor(debug_batches[0][k])
-                    else [b[k] for b in debug_batches]
-                    for k in debug_batches[0].keys()
-                }
-                
-                # Get rendered images for debug batch
-                with torch.no_grad():
-                    debug_rendered = self.train_step(debug_batch, in_train=False)
-                
-                # Save debug images
+                    sample = train_loader.dataset[idx]
+                    batch = {
+                        k: (v.unsqueeze(0) if torch.is_tensor(v) else [v])
+                        for k, v in sample.items()
+                    }
+                    with torch.no_grad():
+                        rendered = self.train_step(batch, in_train=False)  # (1, H, W, 3)
+                    rendered_list.append(rendered.squeeze(0))
+                    gt_list.append(sample['image'])
+                    path_list.append(sample['image_path'])
+
                 self.save_debug_images(
                     epoch=epoch,
-                    rendered_images=debug_rendered,
-                    gt_images=debug_batch['image'],
-                    image_paths=debug_batch['image_path']
+                    rendered_images=torch.stack(rendered_list, dim=0),
+                    gt_images=torch.stack(gt_list, dim=0),
+                    image_paths=path_list,
                 )
 
 def parse_args():
@@ -271,8 +281,8 @@ def parse_args():
     # Debug parameters
     parser.add_argument('--debug_every', type=int, default=1,
                       help='Save debug images every N epochs')
-    parser.add_argument('--debug_samples', type=int, default=1,
-                      help='Number of images to save for debugging')
+    parser.add_argument('--debug_samples', type=int, default=4,
+                      help='Number of views to combine into the debug grid')
     
     # Device
     parser.add_argument('--device', type=str, default='cuda',
