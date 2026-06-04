@@ -283,19 +283,19 @@ epoch_0000.png ... epoch_0059.png
 
 初始阶段：
 
-![debug-epoch-0000](./data/chair/checkpoints/debug_images/epoch_0000.png)
+<img src="./data/chair/checkpoints/debug_images/epoch_0000.png" alt="debug-epoch-0000" width="100%" />
 
 训练 20 epoch 后：
 
-![debug-epoch-0020](./data/chair/checkpoints/debug_images/epoch_0020.png)
+<img src="./data/chair/checkpoints/debug_images/epoch_0020.png" alt="debug-epoch-0020" width="100%" />
 
 训练 40 epoch 后：
 
-![debug-epoch-0040](./data/chair/checkpoints/debug_images/epoch_0040.png)
+<img src="./data/chair/checkpoints/debug_images/epoch_0040.png" alt="debug-epoch-0040" width="100%" />
 
 训练 60 epoch 结束时：
 
-![debug-epoch-0059](./data/chair/checkpoints/debug_images/epoch_0059.png)
+<img src="./data/chair/checkpoints/debug_images/epoch_0059.png" alt="debug-epoch-0059" width="100%" />
 
 ### Video Rendering
 
@@ -335,37 +335,103 @@ data/chair/render_mv.mp4
 4. 简化实现中没有 spherical harmonics，仅使用 RGB 颜色参数，视角相关反射与高频纹理表达能力有限。
 5. 分块渲染降低了显存峰值，但训练 backward 需要保留或重算 chunk 的中间量，因此速度与显存之间存在 trade-off。
 
-## Task 3 - Comparison with Official 3DGS
+## Task 3 - 与官方 3DGS 实现对比
 
-### Official 3DGS
+### 官方 3DGS 实验设置
 
-官方 3DGS 实现包含多项工程优化与模型能力增强：
+为了与本作业的简化 PyTorch 实现进行对比，我们在服务器上的官方 3DGS 环境中运行同一个 `chair` 场景。官方训练使用原始 `800 x 800` 图像，不进行本作业代码中的 8 倍下采样。
 
-1. CUDA tile-based rasterizer
-2. Adaptive Gaussian densification
-3. Gaussian pruning
-4. Spherical harmonics color representation
-5. 高效可微排序与 alpha compositing
-6. 面向实时渲染的显存与带宽优化
+官方训练命令如下：
 
-### Comparison
+```bash
+python train_3dgs.py -s /path/to/chair -m /path/to/output/chair_official -r 1 --iterations 30000 --debug_save_interval 1000 --debug_views 4
+```
 
-| Aspect | Simplified PyTorch Implementation | Official 3DGS |
+其中 `-r 1` 表示使用原始分辨率。训练脚本每 1000 次迭代保存一次 GT / render 对比图，并记录训练速度、显存占用和 Gaussian 数量。
+
+本次已下载的官方训练记录覆盖 `1000` 到 `14000` iteration。虽然未包含完整 30000 iteration 的最终结果，但已经覆盖了 adaptive densification 的主要增长阶段，足以用于说明官方实现的速度、显存和渲染质量趋势。
+
+官方输出文件：
+
+- `metrics.jsonl`
+- `debug_images/iter_001000.png`
+- `debug_images/iter_002000.png`
+- ...
+- `debug_images/iter_014000.png`
+
+### 官方 3DGS 实验结果
+
+官方 3DGS 训练过程中的 GT / render 对比如下。每张图上半部分为 GT，下半部分为官方 3DGS 渲染结果。
+
+1000 iterations：
+
+<img src="./debug_images/iter_001000.png" alt="official-iter-001000" width="100%" />
+
+7000 iterations：
+
+<img src="./debug_images/iter_007000.png" alt="official-iter-007000" width="100%" />
+
+10000 iterations：
+
+<img src="./debug_images/iter_010000.png" alt="official-iter-010000" width="100%" />
+
+14000 iterations：
+
+<img src="./debug_images/iter_014000.png" alt="official-iter-014000" width="100%" />
+
+官方 3DGS 指标记录如下：
+
+| 迭代次数 | 总损失 | L1 损失 | 单次迭代时间 (ms) | 累计训练时间 (s) | Gaussian 数量 | 峰值显存 (MB) |
+|---:|---:|---:|---:|---:|---:|---:|
+| 1000 | 0.013514 | 0.007523 | 9.55 | 24.68 | 31,863 | 947.40 |
+| 2000 | 0.014673 | 0.007805 | 17.71 | 46.71 | 90,539 | 1050.01 |
+| 3000 | 0.008943 | 0.005557 | 12.47 | 68.67 | 155,758 | 1158.69 |
+| 4000 | 0.008310 | 0.005131 | 9.84 | 86.19 | 203,809 | 1238.00 |
+| 5000 | 0.006975 | 0.004342 | 6.19 | 103.63 | 264,201 | 1334.42 |
+| 6000 | 0.010319 | 0.006868 | 11.20 | 122.62 | 313,358 | 1424.69 |
+| 7000 | 0.012797 | 0.007747 | 8.33 | 142.67 | 331,973 | 1451.61 |
+| 8000 | 0.005853 | 0.003804 | 16.29 | 168.51 | 371,022 | 1518.92 |
+| 9000 | 0.007927 | 0.005053 | 14.11 | 200.16 | 397,947 | 1577.72 |
+| 10000 | 0.005050 | 0.003300 | 14.10 | 222.92 | 405,263 | 1586.63 |
+| 11000 | 0.008686 | 0.006146 | 14.82 | 247.39 | 428,091 | 1618.94 |
+| 12000 | 0.005611 | 0.003790 | 10.85 | 272.63 | 441,106 | 1640.87 |
+| 13000 | 0.006118 | 0.004006 | 9.15 | 297.63 | 443,166 | 1640.87 |
+| 14000 | 0.009039 | 0.006104 | 17.13 | 323.29 | 454,959 | 1660.30 |
+
+汇总：
+
+- 已记录迭代次数：`14000`
+- 训练到 14000 次迭代的累计时间：`323.29 s`
+- 记录点上的平均单次迭代时间：`12.27 ms`
+- 峰值 GPU 显存：`1660.30 MB`
+- 最终记录的 Gaussian 数量：`454,959`
+- 记录到的最小总损失：`0.005050`
+
+### 对比表格
+
+| 对比项目 | 本作业简化 PyTorch 实现 | 官方 3DGS 实现 |
 |---|---|---|
-| Rasterization | PyTorch tensor operations | Custom CUDA rasterizer |
-| Gaussian count | Fixed from COLMAP sparse points | Adaptive densification and pruning |
-| Color model | RGB per Gaussian | Spherical harmonics |
-| Training speed | Slower, memory-sensitive | Much faster |
-| Rendering quality | Limited detail, blurrier | Higher quality and sharper details |
-| Memory efficiency | Requires chunking/checkpointing | Tile-based memory-efficient rendering |
-| Engineering complexity | Easier to understand and debug | More complex but optimized |
+| 输入分辨率 | 8 倍下采样后为 `100 x 100` | 使用原图 `800 x 800`，无下采样 |
+| 光栅化方式 | PyTorch 张量计算，并加入分块渲染 | CUDA tile-based rasterizer |
+| Gaussian 数量 | 固定为 COLMAP 稀疏点数量：`14361` | 自适应 densification，14000 iter 时为 `454959` |
+| 颜色表示 | 每个 Gaussian 一个 RGB 颜色 | Spherical Harmonics |
+| 训练速度 | 本地环境下为秒级单次迭代，分块后显存安全但速度较慢 | 服务器记录点平均约 `12.27 ms/iter` |
+| 显存占用 | 通过分块和 checkpointing 控制显存，但训练速度下降 | 14000 iter 时记录峰值显存 `1660.30 MB` |
+| 渲染质量 | 结果较模糊，高频细节有限 | 轮廓、纹理和局部细节更清晰 |
+| 结果分辨率 | debug 图和视频受源码下采样影响，分辨率较低 | debug 图使用原始分辨率 |
 
-### Difference Sources
+### 渲染质量分析
+
+从 debug 图可以看到，官方 3DGS 在 1000 iteration 时已经能恢复主要形状；随着 densification 进行，Gaussian 数量从 `31,863` 增长到 `454,959`，物体轮廓、局部纹理和透明背景边界逐步变清晰。相比之下，本作业简化实现只使用 COLMAP 稀疏点初始化的固定 Gaussian 数量，没有 densification，也没有 spherical harmonics，因此对细节、高频纹理和视角相关颜色的表达能力明显不足。
+
+需要注意的是，本次速度与显存对比不是完全相同硬件环境下的严格 benchmark：官方 3DGS 在服务器环境中运行，而简化 PyTorch 版本在本地 Windows 环境中运行。因此训练速度和显存占用主要用于说明两种实现的工程量级差异，而不是严格的同机性能对比。渲染质量方面，官方结果使用原始 `800 x 800` 分辨率，本作业简化实现使用 `100 x 100` 下采样图像，这也是简化结果明显更模糊的重要原因之一。
+
+### 差异来源
 
 1. **Rasterizer efficiency**：官方实现使用 CUDA tile rasterizer，只处理局部 tile 内有效 Gaussian；本实现主要依赖 PyTorch 张量计算，即使加入 chunking 仍不如专用 CUDA kernel。
 2. **Densification**：官方实现会根据梯度自动复制/细分 Gaussian，逐步增加几何与纹理细节；本实现 Gaussian 数量固定为 COLMAP 稀疏点数量。
 3. **Appearance model**：官方实现使用 spherical harmonics 表达视角相关颜色，本实现仅优化固定 RGB。
-4. **Resolution and training cost**：本作业默认下采样 8 倍训练，降低计算成本，但牺牲清晰度。
+4. **Resolution**：官方实验使用 `800 x 800` 原始图像，本作业简化实现默认使用 `100 x 100` 下采样图像。
 5. **Numerical and memory handling**：简化实现需要显式处理 covariance 稳定性、alpha clamp、视锥筛选和分块渲染，否则容易出现 NaN 或显存过高。
 
 ## Conclusion
